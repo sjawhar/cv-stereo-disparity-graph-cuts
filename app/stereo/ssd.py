@@ -1,15 +1,7 @@
-from scipy import ndimage
-import cv2
 import numpy as np
+from .utils import to_gray, convolve
 
-def to_gray(image):
-    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY).astype(np.float32)
-    return (gray - gray.mean()) / gray.std()
-
-def convolve(image, kernel):
-    return ndimage.filters.convolve(image, kernel, mode='constant', cval=0)
-
-def disparity_ssd(image_left, image_right, kernel=7, max_search=30):
+def disparity(image_left, image_right, kernel=7, max_search=30):
     gray_left = to_gray(image_left)
     gray_right = to_gray(image_right)
     kernel = np.ones((kernel, kernel), dtype=np.float32)

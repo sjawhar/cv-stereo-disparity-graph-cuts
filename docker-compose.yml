@@ -1,0 +1,18 @@
+version: '2.4'
+
+services:
+  default:
+    build: .
+    image: cv_proj
+    container_name: cv-proj
+    environment:
+      DISPLAY: unix${DISPLAY}
+      XAUTHORITY: /tmp/.docker.xauth
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+      - ./:/app
+      - ~/.nelson:/home/pset/.nelson
+    working_dir: /app
+    tty: true
+    command: [bash]

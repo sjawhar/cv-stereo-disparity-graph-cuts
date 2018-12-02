@@ -1,18 +1,36 @@
-version: '2.4'
+version: '3.5'
+
+x-display-env:
+  &display-env
+  DISPLAY: unix${DISPLAY}
+  XAUTHORITY: /tmp/.docker.xauth
 
 services:
-  default:
+
+  proj:
     build: .
     image: cv_proj
     container_name: cv-proj
-    environment:
-      DISPLAY: unix${DISPLAY}
-      XAUTHORITY: /tmp/.docker.xauth
     volumes:
-      - /tmp/.X11-unix:/tmp/.X11-unix
-      - /tmp/.docker.xauth:/tmp/.docker.xauth
-      - ./:/app
-      - ~/.nelson:/home/pset/.nelson
+      - ./app:/app
+    environment:
+      << : *display-env
     working_dir: /app
     tty: true
     command: [bash]
+
+  lab:
+    build:
+      context: .
+      dockerfile: lab.Dockerfile
+    image: cv_proj_lab
+    container_name: cv-proj-lab
+    environment:
+      << : *display-env
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - /tmp/.docker.xauth:/tmp/.docker.xauth
+      - ./app:/home/jovyan/work
+    ports:
+      - 8888:8888
+    command: [start.sh, jupyter, lab, --LabApp.token='']

@@ -2,11 +2,11 @@ from .graph import disparity as disparity_graph
 from .ssd import disparity as disparity_ssd
 
 METHOD_SSD='ssd'
-METHOD_GRAPH='graph'
+METHOD_GRAPHCUT='graphcut'
 
 DISPARITY_METHODS = {
     METHOD_SSD: disparity_ssd,
-    METHOD_GRAPH: disparity_graph,
+    METHOD_GRAPHCUT: disparity_graph,
 }
 
 def disparity(image_left, image_right, **kwargs):

@@ -9,6 +9,7 @@ dependencies:
   - scipy=1.1.0=py36hfa4b5c9_1
   - setuptools=39.1.0
   - pip:
+    - matplotlib==2.2.3
     - opencv-python==3.4.3.18
     - pymaxflow==1.2.11
     - scikit-learn==0.20.0

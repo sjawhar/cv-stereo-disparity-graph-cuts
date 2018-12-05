@@ -34,8 +34,8 @@ class GraphCutDisparitySolver:
         self.max_levels = search_depth if max_levels < 0 else max_levels
         self.max_iterations = max_iterations
         self.occlusion_cost = occlusion_cost
-        self.smoothness_cost_high = smoothness_cost_high
-        self.smoothness_cost_low = smoothness_cost_low
+        self.smoothness_cost_low = smoothness_cost_low if smoothness_cost_low > 0 else 0.2 * self.occlusion_cost
+        self.smoothness_cost_high = smoothness_cost_high if smoothness_cost_high > 0 else 3 * self.smoothness_cost_low
         self.smoothness_threshold = smoothness_threshold
 
         self.image_left = to_gray(image_left)
@@ -96,7 +96,7 @@ class GraphCutDisparitySolver:
             if label_done.all():
                 break
 
-        return np.copy(self.labels)
+        return -1 * self.labels
 
     def expand_label(self, label):
         is_expanded = False

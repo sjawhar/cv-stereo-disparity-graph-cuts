@@ -1,7 +1,8 @@
 KZ2
 reference
 input-images
-output-images
+app/*.png
+app/*.tex
 
 ###Python###
 

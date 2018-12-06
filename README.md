@@ -6,9 +6,9 @@ A small CLI is included to run the disparity algorithm. You can run the SSD on a
 Video report available at [https://youtu.be/muDOTiv_v-8](https://youtu.be/muDOTiv_v-8)
 
 ## Setup
-g++ is required to install PyMaxflow. Please make sure this is installed on your system before trying to install PyMaxflow:
+g++ is required to install PyMaxflow, and libgtk is required for OpenCV. If not using the provided Dockerfile, please make sure these are installed on your system:
 ```bash
 apt-get update
-apt-get install -y g++
+apt-get install -y g++ libgtk2.0-dev
 conda env update -f environment.yml
 ```

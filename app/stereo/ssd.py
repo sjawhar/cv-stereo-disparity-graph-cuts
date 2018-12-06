@@ -1,5 +1,9 @@
 import numpy as np
-from .utils import to_gray, convolve
+from .utils import to_gray
+from scipy import ndimage
+
+def convolve(image, kernel):
+    return ndimage.filters.convolve(image, kernel, mode='constant', cval=0)
 
 def disparity(image_left, image_right, kernel=7, search_depth=30):
     gray_left = to_gray(image_left)

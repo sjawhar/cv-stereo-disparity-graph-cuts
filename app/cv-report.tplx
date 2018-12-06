@@ -1,0 +1,34 @@
+((*- extends 'article.tplx' -*))
+
+% Author and Title from metadata
+((* block maketitle *))
+
+((*- if nb.metadata["latex_metadata"]: -*))
+((*- if nb.metadata["latex_metadata"]["author"]: -*))
+    \author{((( nb.metadata["latex_metadata"]["author"] )))}
+((*- endif *))
+((*- else -*))
+    \author{Julius C. F. Schulz}
+((*- endif *))
+
+((*- if nb.metadata["latex_metadata"]: -*))
+((*- if nb.metadata["latex_metadata"]["affiliation"]: -*))
+    \affiliation{((( nb.metadata["latex_metadata"]["affiliation"] )))}
+((*- endif *))
+((*- endif *))
+
+((*- if nb.metadata["latex_metadata"]: -*))
+((*- if nb.metadata["latex_metadata"]["title"]: -*))
+    \title{((( nb.metadata["latex_metadata"]["title"] )))}
+((*- endif *))
+((*- else -*))
+    \title{((( resources.metadata.name )))}
+((*- endif *))
+
+\date{05 Dec 2018}
+\maketitle
+((* endblock maketitle *))
+
+% Disable input cells
+((* block input_group *))
+((* endblock input_group *))

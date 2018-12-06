@@ -8,21 +8,9 @@ x-display-env:
 services:
 
   proj:
-    build: .
-    image: cv_proj
-    container_name: cv-proj
-    volumes:
-      - ./app:/app
-    environment:
-      << : *display-env
-    working_dir: /app
-    tty: true
-    command: [bash]
-
-  lab:
     build:
       context: .
-      dockerfile: lab.Dockerfile
+      dockerfile: Dockerfile
     image: cv_proj_lab
     container_name: cv-proj-lab
     environment:

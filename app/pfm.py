@@ -44,7 +44,7 @@ def load_pfm(filename, resize=1):
   data = np.reshape(data, shape)[::-1]
 
   if resize != 1:
-    data = cv2.resize(data, None, fx=resize, fy=resize, interpolation=cv2.INTER_AREA) * resize
+    data = cv2.resize(data, None, fx=resize, fy=resize, interpolation=cv2.INTER_AREA).astype(float) * resize
 
   is_inf = data == np.inf
   data[is_inf] = -1

@@ -6,11 +6,11 @@ import numpy as np
 import os
 import stereo as st
 
-IMAGES_DIR = 'input-images'
+INPUT_DIR = 'input'
 OUTPUT_DIR = 'output'
 REPORT_IMAGES = {
+    'adirondack': (61, 80, 0.25),
     'cones': (65, 87, None),
-    'adirondack': (61, 66, 0.25),
     'flowers': (150, 203, 0.25),
     'motorcycle': (60, 118, 0.25),
     'pipes': (70, 82, 0.25),
@@ -26,24 +26,28 @@ def disparity_to_gray(disp, bgr=True):
 def disparity_to_jet(disp, bgr=True):
     cm_jet = cm.ScalarMappable(cmap='jet')
     is_occluded = disp < 0
-    jet = cm_jet.to_rgba(np.where(is_occluded, 0, disp), bytes=True)
+    jet = cm_jet.to_rgba(np.where(is_occluded, 0, disp), bytes=True)[:, :, :3]
     jet[is_occluded] = 0
     if not bgr:
         return jet
     return cv2.cvtColor(jet, cv2.COLOR_RGB2BGR)
 
-def percent_correct(data, result):
-    return np.sum(np.abs(result - data) < 1) / float(data.size)
+def get_accuracy(true, pred, scale):
+    is_correct = np.abs(true - pred) <= 2. * scale
+    total_accuracy = is_correct.sum() / float(true.size)
+    is_visible = true >= 0
+    visible_accuracy = is_correct[is_visible].sum() / float(is_visible.sum())
+    return total_accuracy, visible_accuracy
 
 def process_image_pair(image_pair, generate_ssd=False, generate_graphcut=False):
     search_depth, occlusion_cost, pfm_scale = REPORT_IMAGES[image_pair]
-    left = cv2.imread(os.path.join(IMAGES_DIR, image_pair, 'im0.png'))
-    right = cv2.imread(os.path.join(IMAGES_DIR, image_pair, 'im1.png'))
+    left = cv2.imread(os.path.join(INPUT_DIR, image_pair, 'im0.png'))
+    right = cv2.imread(os.path.join(INPUT_DIR, image_pair, 'im1.png'))
 
     disparity_ssd, accuracy_ssd, disparity_graphcut, accuracy_graphcut, ground_truth = None, None, None, None, None
 
     if pfm_scale:
-        ground_truth = load_pfm(os.path.join(IMAGES_DIR, image_pair, 'disp0.pfm'), pfm_scale)
+        ground_truth = load_pfm(os.path.join(INPUT_DIR, image_pair, 'disp0.pfm'), pfm_scale)
 
     if generate_ssd:
         disparity_ssd = st.disparity(
@@ -51,8 +55,8 @@ def process_image_pair(image_pair, generate_ssd=False, generate_graphcut=False):
             method=st.METHOD_SSD,
             search_depth=search_depth,
         )
-        if ground_truth is not None:
-            accuracy_ssd = percent_correct(ground_truth, disparity_ssd)
+        if pfm_scale is not None:
+            accuracy_ssd = get_accuracy(ground_truth, disparity_ssd, pfm_scale)
 
     if generate_graphcut:
         disparity_graphcut = st.disparity(
@@ -61,8 +65,8 @@ def process_image_pair(image_pair, generate_ssd=False, generate_graphcut=False):
             search_depth=search_depth,
             occlusion_cost=occlusion_cost,
         )
-        if ground_truth is not None:
-            accuracy_ssd = percent_correct(ground_truth, disparity_graphcut)
+        if pfm_scale is not None:
+            accuracy_ssd = get_accuracy(ground_truth, disparity_graphcut, pfm_scale)
 
     return disparity_ssd, accuracy_ssd, disparity_graphcut, accuracy_graphcut
 
@@ -87,11 +91,11 @@ if __name__ == '__main__':
                 disparity,
             )
             if accuracy is not None:
-                print(image_pair, 'accuracy', accuracy)
+                print(image_pair, method, 'accuracy', accuracy)
 
     parser = argparse.ArgumentParser(description = 'Generate disparity maps for Middlebury stereo image pairs')
 
-    parser.add_argument('image_pairs', metavar='IMAGE_PAIRS', nargs='+', type=str, help='the name of the image pair in %s' % IMAGES_DIR, choices=list(REPORT_IMAGES.keys()) + ['all'])
+    parser.add_argument('image_pairs', metavar='IMAGE_PAIRS', nargs='+', type=str, help='the name of the image pair in %s' % INPUT_DIR, choices=list(REPORT_IMAGES.keys()) + ['all'])
     parser.add_argument('-s', '--ssd', action='store_true', help='generate disparity map using ssd')
     parser.add_argument('-g', '--graph-cut', action='store_true', help='generate disparity map using graph cuts')
 

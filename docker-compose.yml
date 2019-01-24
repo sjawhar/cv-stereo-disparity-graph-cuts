@@ -6,8 +6,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: cv_proj_lab
-    container_name: cv-proj-lab
+    image: sjawhar/pymaxflow-notebook
+    container_name: cv-stereo-disparity
     environment:
       DISPLAY: unix${DISPLAY}
       XAUTHORITY: /tmp/.docker.xauth

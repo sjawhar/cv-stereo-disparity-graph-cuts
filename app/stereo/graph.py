@@ -71,7 +71,7 @@ class GraphCutDisparitySolver:
         self.neighbors_rolled = list(np.rollaxis(self.neighbors, 1))
 
         indices_p, indices_q = self.neighbors
-        diff_left = self.image_left[list(indices_p)] - self.image_left[list(indices_q)]
+        diff_left = self.image_left[indices_p[0], indices_p[1]] - self.image_left[indices_q[0], indices_q[1]]
         self.is_left_under = np.abs(diff_left) < self.smoothness_threshold
 
     def solve(self):
@@ -169,7 +169,8 @@ class GraphCutDisparitySolver:
         self.e_data_occlusion = e_data_occlusion
 
     def add_smoothness_terms(self, g, label):
-        labels_p, labels_q = self.labels[self.neighbors_rolled]
+
+        labels_p, labels_q = self.labels[self.neighbors_rolled[0], self.neighbors_rolled[1]]
 
         penalty_label = self.get_smoothness_penalty(label)
         penalty_active_p = self.get_smoothness_penalty(labels_p)
@@ -231,7 +232,7 @@ class GraphCutDisparitySolver:
 
         indices_p_shifted, is_p_in_image = self._shift(indices_p[:, self.is_left_under], labels)
         indices_q_shifted, is_q_in_image = self._shift(indices_q[:, self.is_left_under], labels)
-        diff_right = self.image_right[list(indices_p_shifted)] - self.image_right[list(indices_q_shifted)]
+        diff_right = self.image_right[indices_p_shifted[0],indices_p_shifted[1]] - self.image_right[indices_q_shifted[0], indices_q_shifted[1]]
 
         is_left_under = np.copy(self.is_left_under)
         is_left_under[is_left_under] = np.abs(diff_right) < self.smoothness_threshold
